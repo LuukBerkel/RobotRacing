@@ -12,6 +12,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(26)
+    }
+}
+
 dependencies {
     implementation("org.jfree:org.jfree.fxgraphics2d:2.1.5")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
@@ -44,7 +50,6 @@ jlink {
 
     options.set(listOf(
         "--strip-debug",
-        "--compress", "2",
         "--no-header-files",
         "--no-man-pages"
     ))
