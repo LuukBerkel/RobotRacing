@@ -28,27 +28,39 @@ jobs:
       - name: Build firmware
         run: pio run
 
-      - name: Prepare output
+      - name: Prepare firmware package
         run: |
           mkdir -p dist
-          cp .pio/build/*/firmware.hex dist/
 
-      - name: Rename based on tag
+          cp .pio/build/esp32cam/bootloader.bin dist/
+          cp .pio/build/esp32cam/partitions.bin dist/
+          cp .pio/build/esp32cam/firmware.bin dist/
+
+          echo "bootloader.bin 0x1000" > dist/flash.txt
+          echo "partitions.bin 0x8000" >> dist/flash.txt
+          echo "firmware.bin 0x10000" >> dist/flash.txt
+
+      - name: Rename firmware with tag
         run: |
           echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          cp dist/firmware.hex dist/${GITHUB_REF_NAME}.hex
+          cp dist/firmware.bin dist/${GITHUB_REF_NAME}.bin
+
+      - name: Create ZIP package
+        run: |
+          cd dist
+          zip -r firmware-${GITHUB_REF_NAME}.zip .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ github.ref_name }}
-          path: dist/*.hex
+          path: dist/*.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          files: dist/*.hex
+          files: dist/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
