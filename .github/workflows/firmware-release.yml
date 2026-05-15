@@ -1,12 +1,13 @@
 name: Firmware Release Build
 
 on:
-  release:
-    types: [published]
-    
+  push:
+    tags:
+      - "firmware-v*"
+
 permissions:
   contents: write
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,19 +43,21 @@ jobs:
           echo "partitions.bin 0x8000" >> dist/flash.txt
           echo "firmware.bin 0x10000" >> dist/flash.txt
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware-${{ github.event.release.tag_name }}
-          path: dist/*
+      - name: Create zip package
+        run: |
+          cd dist
+          zip firmware-build.zip *
 
-      - name: Upload to GitHub Release
+      
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} \
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Release ${GITHUB_REF_NAME}" \
+            --notes "Automated release for ${GITHUB_REF_NAME}" \
             dist/bootloader.bin \
             dist/partitions.bin \
             dist/firmware.bin \
             dist/flash.txt \
-            --clobber
+            dist/firmware-build.zip
