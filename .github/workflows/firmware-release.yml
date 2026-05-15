@@ -46,14 +46,12 @@ jobs:
           path: RobotRacingFirmware/dist/*
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.release.tag_name }}
-          name: Release ${{ github.event.release.tag_name }}
-          files: |
-            RobotRacingFirmware/dist/bootloader.bin
-            RobotRacingFirmware/dist/partitions.bin
-            RobotRacingFirmware/dist/firmware.bin
-            RobotRacingFirmware/dist/flash.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} \
+            RobotRacingFirmware/dist/bootloader.bin \
+            RobotRacingFirmware/dist/partitions.bin \
+            RobotRacingFirmware/dist/firmware.bin \
+            RobotRacingFirmware/dist/flash.txt \
+            --clobber
