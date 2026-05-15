@@ -2,8 +2,8 @@ name: Firmware Release Build
 
 on:
   release:
-    types: [created]
-    
+    types: [published]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,18 +42,18 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ github.ref_name }}
-          path: dist/*
+          name: firmware-${{ github.event.release.tag_name }}
+          path: RobotRacingFirmware/dist/*
 
-      - name: Create GitHub Release
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.event.release.tag_name }}
+          name: Release ${{ github.event.release.tag_name }}
           files: |
-            dist/bootloader.bin
-            dist/partitions.bin
-            dist/firmware.bin
-            dist/flash.txt
+            RobotRacingFirmware/dist/bootloader.bin
+            RobotRacingFirmware/dist/partitions.bin
+            RobotRacingFirmware/dist/firmware.bin
+            RobotRacingFirmware/dist/flash.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
