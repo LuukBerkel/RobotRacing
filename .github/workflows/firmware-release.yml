@@ -1,10 +1,9 @@
 name: Firmware Release Build
 
 on:
-  push:
-    tags:
-      - "firmware-v*"
-
+  release:
+    types: [created]
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,27 +39,21 @@ jobs:
           echo "partitions.bin 0x8000" >> dist/flash.txt
           echo "firmware.bin 0x10000" >> dist/flash.txt
 
-      - name: Rename firmware with tag
-        run: |
-          echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          cp dist/firmware.bin dist/${GITHUB_REF_NAME}.bin
-
-      - name: Create ZIP package
-        run: |
-          cd dist
-          zip -r firmware-${GITHUB_REF_NAME}.zip .
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ github.ref_name }}
-          path: dist/*.zip
+          path: dist/*
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          files: dist/*.zip
+          files: |
+            dist/bootloader.bin
+            dist/partitions.bin
+            dist/firmware.bin
+            dist/flash.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
