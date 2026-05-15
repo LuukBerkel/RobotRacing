@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: RobotClientFirmware
+        working-directory: RobotRacingFirmware
 
     steps:
       - name: Checkout repository
