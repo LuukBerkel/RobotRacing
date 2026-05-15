@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ github.event.release.tag_name }}
-          path: RobotRacingFirmware/dist/*
+          path: dist/*
 
       - name: Upload to GitHub Release
         env:
