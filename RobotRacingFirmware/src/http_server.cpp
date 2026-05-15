@@ -1,9 +1,10 @@
 #include "http_server.hpp"
 #include <esp_http_server.h>
 
-void HTTPServer::init(Camera *camera, Drive *drive) {
+void HTTPServer::init(Camera *camera, Drive *drive, String name) {
     this->camera = camera;
     this->drive = drive;
+    this->name = name;
 }
 
 #define PART_BOUNDARY "123456789000000000000987654321"
@@ -98,14 +99,14 @@ void HTTPServer::startServer() {
     };
 
     httpd_uri_t pingURI = {
-        .uri       = "/ping",
+        .uri       = "/name",
         .method    = HTTP_GET,
         .handler   = [](httpd_req_t *req) -> esp_err_t {
-            const char* response = "pong";
-            httpd_resp_send(req, response, strlen(response));
+            const char* name = static_cast<const char*>(req->user_ctx);
+            httpd_resp_send(req, name, strlen(name));
             return ESP_OK;
         },
-        .user_ctx  = nullptr
+        .user_ctx  = (void*)name.c_str()
     };
 
 

@@ -7,12 +7,14 @@ class HTTPServer
 private:
     Camera *camera;
     Drive *drive;
+    String name;
 public:
     /**
      * @brief Initializes the HTTP server with the given camera and drive instances.
      * @param camera The Camera instance to use for streaming video
      * @param drive The Drive instance to use for controlling the robot's movement
+     * @param name The name of the HTTP server
      */
-    void init(Camera *camera, Drive *drive);
+    void init(Camera *camera, Drive *drive, String name);
     void startServer();
 };
